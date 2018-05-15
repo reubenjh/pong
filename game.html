@@ -12,6 +12,11 @@
 
         var player1Score = 0;
         var player2Score = 0;
+        const WINNING_SCORE = 3;
+
+        var showingWinScreen = false;
+        var player1Win = false;
+        var player2Win = false;
 
         var paddle1Y = 250;
         var paddle2Y = 250;
@@ -41,6 +46,15 @@
                 var mousePos = calculateMousePos(evt);
                 paddle1Y = mousePos.y-(PADDLE_HEIGHT/2)
             });
+            /* Allow click to continue on winning screen
+             */
+            canvas.addEventListener("click", function() {
+                if (showingWinScreen) {
+                    player1Score = 0;
+                    player2Score = 0;
+                    showingWinScreen = false;
+                }
+            })
 
         }
         
@@ -68,6 +82,11 @@
         }
 
         function moveEverything() {
+            /* Pausing movement if someone has won
+             */
+            if (showingWinScreen) {
+                return;
+            }
             /* AI for right paddle
              */
             computerMovement();
@@ -81,17 +100,24 @@
             if (ballX > canvas.width) {
                 if (ballY > paddle2Y && ballY < (paddle2Y + PADDLE_HEIGHT)) {
                     ballSpeedX = -ballSpeedX;
+
+                    var deltaY = ballY-(paddle2Y+PADDLE_HEIGHT/2);
+                    ballSpeedY = deltaY * 0.35;
                 } else { 
+                    player1Score++; // Must be before ball reset
                     ballReset();
-                    player1Score++;
+
                 }
             } 
             if (ballX < 0) {
                 if (ballY > paddle1Y && ballY < (paddle1Y + PADDLE_HEIGHT)) {
                     ballSpeedX = -ballSpeedX;
+                    
+                    var deltaY = ballY-(paddle1Y+PADDLE_HEIGHT/2);
+                    ballSpeedY = deltaY * 0.35;
                 } else { 
+                    player2Score++; // Must be before ball reset
                     ballReset();
-                    player2Score++;
                 }
             }
             /* Make ball bounce vertically
@@ -108,6 +134,20 @@
             /* Blank the screen with black
              */
             drawRect(0, 0, canvas.width, canvas.height, "black");
+            /* Pausing movement if someone has won
+             */
+             if (showingWinScreen) {
+                canvasContext.fillStyle = "white";
+                canvasContext.fillText("Score = "+player1Score, 100, 70);
+                canvasContext.fillText("Score = "+player2Score, 650, 70);
+                if (player1Win) {
+                    canvasContext.fillText("Player 1 winzzzzzz", (canvas.width/2) - 35, (canvas.height/2) - 30);
+                } else if (player2Win) {
+                    canvasContext.fillText("Player 2 winzzzzzz", (canvas.width/2) - 35, (canvas.height/2) - 30);
+                }
+                canvasContext.fillText("Click to continue", (canvas.width/2) - 30, canvas.height/2)
+                return;
+            }
             /* Draw the ball
              */
             drawCircle(ballX, ballY, 10, "white");
@@ -119,10 +159,8 @@
             drawRect(canvas.width-PADDLE_THICKNESS, paddle2Y, PADDLE_THICKNESS, PADDLE_HEIGHT, "white");
             /* Draw the scoring
              */
-            canvasContext.fillText("Score = "+player1Score, 100, 30);
-            canvasContext.fillText("Score = "+player2Score, 650, 30);
-
-
+            canvasContext.fillText("Score = "+player1Score, 100, 70);
+            canvasContext.fillText("Score = "+player2Score, 650, 70);
         }
 
         function drawCircle(centerX, centerY, radius, color) {
@@ -138,6 +176,15 @@
         }
 
         function ballReset() {
+            if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) {
+                if (player1Score >= WINNING_SCORE) {
+                    player1Win = true;
+                }
+                if (player2Score >= WINNING_SCORE) {
+                    player2Win = true;
+                }
+                showingWinScreen = true;
+            }
             ballSpeedX = -ballSpeedX;
             ballX = canvas.width/2;
             ballY = canvas.height/2;
