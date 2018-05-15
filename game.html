@@ -54,7 +54,19 @@
             };
         }
 
+        function computerMovement() {
+            if (paddle2Y < ballY) {
+                paddle2Y += 6;
+            } else {
+                paddle2Y -= 6;
+            }
+        }
+
         function moveEverything() {
+            /* AI for right paddle
+             */
+            computerMovement();
+
             /* Move ball
              */
             ballX += ballSpeedX;
