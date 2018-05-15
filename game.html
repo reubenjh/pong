@@ -11,19 +11,6 @@
         var ballSpeedY = 4;
         var paddle1Y = 250;
         const PADDLE_HEIGHT = 100;
-
-        function calculateMousePos(evt) {
-            /* Find mouse coordinates on user page, with 0,0 at their top left
-             */
-            var rect = canvas.getBoundingClientRect();
-            var root = document.documentElement;
-            var mouseX = evt.clientX - rect.left - root.scrollLeft;
-            var mouseY = evt.clientY - rect.top - root.scrollTop;
-            return {
-                x:mouseX,
-                y:mouseY
-            };
-        }
         
         window.onload = function() {
             /* Create canvas
@@ -50,6 +37,26 @@
             });
 
         }
+        
+        function calculateMousePos(evt) {
+            /* Find mouse coordinates on user page, with 0,0 at their top left
+             */
+            var rect = canvas.getBoundingClientRect();
+            var root = document.documentElement;
+            var mouseX = evt.clientX - rect.left - root.scrollLeft;
+            var mouseY = evt.clientY - rect.top - root.scrollTop;
+            return {
+                x:mouseX,
+                y:mouseY
+            };
+        }
+
+        function ballReset() {
+            ballSpeedX = -ballSpeedX;
+            ballX = canvas.width/2;
+            ballY = canvas.height/2;
+        }
+
 
         function moveEverything() {
             /* Move ball
@@ -62,7 +69,11 @@
                 ballSpeedX = -ballSpeedX;
             } 
             if (ballX < 0) {
-                ballSpeedX = -ballSpeedX;
+                if (ballY > paddle1Y && ballY < (paddle1Y + PADDLE_HEIGHT)) {
+                    ballSpeedX = -ballSpeedX;
+                } else { 
+                    ballReset();
+                }
             }
             /* Make ball bounce vertically
              */
