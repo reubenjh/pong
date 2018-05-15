@@ -9,8 +9,11 @@
         var ballY = 300;
         var ballSpeedX = 10;
         var ballSpeedY = 4;
+
         var paddle1Y = 250;
+        var paddle2Y = 250;
         const PADDLE_HEIGHT = 100;
+        const PADDLE_THICKNESS = 10;
         
         window.onload = function() {
             /* Create canvas
@@ -51,22 +54,19 @@
             };
         }
 
-        function ballReset() {
-            ballSpeedX = -ballSpeedX;
-            ballX = canvas.width/2;
-            ballY = canvas.height/2;
-        }
-
-
         function moveEverything() {
             /* Move ball
              */
             ballX += ballSpeedX;
             ballY += ballSpeedY;
-            /* Make ball bounce horizontally
+            /* Make ball either bounce horizontally or reset if missed
              */
             if (ballX > canvas.width) {
-                ballSpeedX = -ballSpeedX;
+                if (ballY > paddle2Y && ballY < (paddle2Y + PADDLE_HEIGHT)) {
+                    ballSpeedX = -ballSpeedX;
+                } else { 
+                    ballReset();
+                }
             } 
             if (ballX < 0) {
                 if (ballY > paddle1Y && ballY < (paddle1Y + PADDLE_HEIGHT)) {
@@ -94,7 +94,11 @@
             drawCircle(ballX, ballY, 10, "white");
             /* Draw the left paddle
              */
-            drawRect(0, paddle1Y, 10, PADDLE_HEIGHT, "white");
+            drawRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE_HEIGHT, "white");
+            /* Draw the right paddles
+             */
+            drawRect(canvas.width-PADDLE_THICKNESS, paddle2Y, PADDLE_THICKNESS, PADDLE_HEIGHT, "white");
+
         }
 
         function drawCircle(centerX, centerY, radius, color) {
@@ -109,7 +113,11 @@
             canvasContext.fillRect(leftX, topY, width, height);
         }
 
-
+        function ballReset() {
+            ballSpeedX = -ballSpeedX;
+            ballX = canvas.width/2;
+            ballY = canvas.height/2;
+        }
 
     </script>
 </head>
