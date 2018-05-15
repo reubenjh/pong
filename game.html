@@ -5,37 +5,97 @@
     <script>
         var canvas;
         var canvasContext;
-        var ballX = 1;
-        var ballSpeedX = 5;
-        var paddleY = 250;
+        var ballX = 0;
+        var ballY = 300;
+        var ballSpeedX = 10;
+        var ballSpeedY = 4;
+        var paddle1Y = 250;
+        const PADDLE_HEIGHT = 100;
+
+        function calculateMousePos(evt) {
+            /* Find mouse coordinates on user page, with 0,0 at their top left
+             */
+            var rect = canvas.getBoundingClientRect();
+            var root = document.documentElement;
+            var mouseX = evt.clientX - rect.left - root.scrollLeft;
+            var mouseY = evt.clientY - rect.top - root.scrollTop;
+            return {
+                x:mouseX,
+                y:mouseY
+            };
+        }
         
         window.onload = function() {
+            /* Create canvas
+             */
             canvas = document.getElementById("gameCanvas");
             canvasContext = canvas.getContext("2d");
-            canvasContext.fillStyle = "black";
-            canvasContext.fillRect(0,0,canvas.width,canvas.height);
+            /* Draw empty canvas
+             */
+            drawRect(0, 0, canvas.width, canvas.height, "black");
             
+            /* Setting initial speed
+             */
             var framesPerSecond = 30
             setInterval(function() {
                 moveEverything();
                 drawEverything();
             }, 1000/framesPerSecond);
-            }
 
-        function moveEverything() {
-            if (ballX > canvas.width) {
-                ballSpeedX = -ballSpeedX;
-            } else ballX += ballSpeedX;
+            /* Setting mouse coordinates to control left padding position
+             */
+            canvas.addEventListener("mousemove", function(evt) {
+                var mousePos = calculateMousePos(evt);
+                paddle1Y = mousePos.y-(PADDLE_HEIGHT/2)
+            });
 
         }
 
+        function moveEverything() {
+            /* Move ball
+             */
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+            /* Make ball bounce horizontally
+             */
+            if (ballX > canvas.width) {
+                ballSpeedX = -ballSpeedX;
+            } 
+            if (ballX < 0) {
+                ballSpeedX = -ballSpeedX;
+            }
+            /* Make ball bounce vertically
+             */
+            if (ballY < 0) {
+                ballSpeedY = -ballSpeedY;
+            }
+            if (ballY > canvas.height) {
+                ballSpeedY = -ballSpeedY;
+            }
+        }
+
         function drawEverything() {
-            canvasContext.fillStyle = "black";
-            canvasContext.fillRect(0,0,canvas.width,canvas.height);
-            canvasContext.fillStyle = "red";
-            canvasContext.fillRect(ballX,280,10,10);
-            canvasContext.fillStyle = "white";
-            canvasContext.fillRect(0,paddleY,10,100);
+            /* Blank the screen with black
+             */
+            drawRect(0, 0, canvas.width, canvas.height, "black");
+            /* Draw the ball
+             */
+            drawCircle(ballX, ballY, 10, "white");
+            /* Draw the left paddle
+             */
+            drawRect(0, paddle1Y, 10, PADDLE_HEIGHT, "white");
+        }
+
+        function drawCircle(centerX, centerY, radius, color) {
+            canvasContext.fillStyle = color;
+            canvasContext.beginPath();
+            canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+            canvasContext.fill();
+        }
+
+        function drawRect(leftX, topY, width, height, color) {
+            canvasContext.fillStyle = color;
+            canvasContext.fillRect(leftX, topY, width, height);
         }
 
 
