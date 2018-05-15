@@ -7,7 +7,7 @@
         var canvasContext;
         var ballX = 0;
         var ballY = 300;
-        var ballSpeedX = 30;
+        var ballSpeedX = 10;
         var ballSpeedY = 4;
 
         var player1Score = 0;
@@ -52,7 +52,10 @@
                     player2Score = 0;
                     showingWinScreen = false;
                 }
-            })
+            });
+            /* Pause game and show intro
+             */
+            showingWinScreen = true;
 
         }
         
@@ -140,10 +143,13 @@
                 canvasContext.fillText("Score = "+player2Score, 650, 70);
                 if (player1Score >= WINNING_SCORE) {
                     canvasContext.fillText("Player 1 winzzzzzz", (canvas.width/2) - 35, canvas.height/2);
+                    canvasContext.fillText("Click to continue", (canvas.width/2) - 30, canvas.height*(5/6));
                 } else if (player2Score >= WINNING_SCORE) {
                     canvasContext.fillText("Player 2 winzzzzzz", (canvas.width/2) - 35, canvas.height/2);
+                    canvasContext.fillText("Click to continue", (canvas.width/2) - 30, canvas.height*(5/6));
+                } else { 
+                    canvasContext.fillText("Click to pong up a storm", (canvas.width/2) - 50, canvas.height/2);
                 }
-                canvasContext.fillText("Click to continue", (canvas.width/2) - 30, canvas.height*(5/6))
                 return;
             }
             /* Draw the ball
